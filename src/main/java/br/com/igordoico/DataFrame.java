@@ -1,19 +1,16 @@
 package br.com.igordoico;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class DataFrame {
 
-    private int index = 0;
+    private int index;
     private Map<String, Integer> cabecalho = new HashMap<>();
-    private ArrayList<ArrayList<String>> dados =  new ArrayList<>();
+    private ArrayList<ArrayList<String>> dados = new ArrayList<>();
 
     DataFrame(Stream<String> dados, String separador) {
-
+        index = 0;
         dados.forEach(l -> {
             String[] linha = l.split(separador);
             if (index == 0) {
@@ -31,8 +28,28 @@ public class DataFrame {
     }
 
 
-    void getCount(String tipo, String propriedade) {
-        System.out.println("Contando");
+    HashMap<String, Integer> getCount(String tipo, String propriedade) {
+        int total;
+        HashMap<String, Integer> ret = new HashMap<>();
+        switch (tipo) {
+            case "*":
+                propriedade = "Total";
+                total = this.dados.size();
+                ret.put(propriedade,total);
+                break;
+            case "distinct":
+                Integer index = this.cabecalho.get(propriedade);
+                HashSet<String> distinct = new HashSet<>();
+                for (ArrayList<String> dado : this.dados) {
+                    distinct.add(dado.get(index));
+                }
+                ret.put(propriedade,distinct.size());
+                break;
+            default:
+                break;
+
+        }
+        return ret;
     }
 
     void filter(String propriedade, String valor) {

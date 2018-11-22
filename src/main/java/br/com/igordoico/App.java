@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -36,8 +37,6 @@ public class App {
             System.out.println("para ajuda digite: help");
             scn.nextLine();
             comando = scn.nextLine().split(" ");
-            System.out.println(Arrays.toString(comando));
-
 
             if (comando.length > 0) {
                 switch (comando[0]) {
@@ -45,7 +44,12 @@ public class App {
                         if (comando.length > 1) {
                             String tipo = comando[1];
                             String propriedade = comando.length > 2 ? comando[2] : null;
-                            df.getCount(tipo,propriedade);
+                            HashMap<String,Integer> result =  df.getCount(tipo,propriedade);
+                            System.out.println("Resultado");
+                            result.forEach((key, value) -> {
+                                System.out.println(key+" - " +value.toString());
+                            });
+                            System.out.println();
                         } else {
                             System.out.println("Comando incorreto. count * |  distinct [propriedade]");
                         }
@@ -118,3 +122,4 @@ public class App {
         return lines;
     }
 }
+//                ibge_id,uf,name,capital,lon,lat,no_accents,alternative_names,microregion,mesoregion
