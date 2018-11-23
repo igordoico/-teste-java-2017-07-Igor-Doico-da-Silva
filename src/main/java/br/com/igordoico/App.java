@@ -16,7 +16,7 @@ public class App {
     public static void main(String[] args) {
         Stream<String> stream = null;
         String separador;
-        String extensao = null;
+        String extensao;
         do {
             System.out.println("Digite o caminho do arquivo (o caminho nao deve conter espacos)");
             String caminho = scn.next();
