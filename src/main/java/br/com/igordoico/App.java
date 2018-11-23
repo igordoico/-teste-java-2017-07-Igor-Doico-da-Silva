@@ -3,7 +3,7 @@ package br.com.igordoico;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.stream.Stream;
@@ -44,21 +44,21 @@ public class App {
                         if (comando.length > 1) {
                             String tipo = comando[1];
                             String propriedade = comando.length > 2 ? comando[2] : null;
-                            HashMap<String,Integer> result =  df.getCount(tipo,propriedade);
+                            HashMap<String, Integer> result = df.getCount(tipo, propriedade);
                             System.out.println("Resultado");
-                            result.forEach((key, value) -> {
-                                System.out.println(key+" - " +value.toString());
-                            });
+                            result.forEach((key, value) -> System.out.println(key + " - " + value.toString()));
                             System.out.println();
                         } else {
                             System.out.println("Comando incorreto. count * |  distinct [propriedade]");
                         }
                         break;
                     case "filter":
-                        if (comando.length > 3) {
-                            String propriedade = comando[2];
-                            String valor = comando[3];
-                            df.filter(propriedade,valor);
+                        System.out.println(comando.length);
+                        if (comando.length == 3) {
+                            String propriedade = comando[1];
+                            String valor = comando[2];
+                            ArrayList<ArrayList<String>> result = df.filter(propriedade, valor);
+                            result.forEach(item -> System.out.println(item.toString()));
                         } else {
                             System.out.println("Comando incorreto. filter  [propriedade] [valor]");
                         }

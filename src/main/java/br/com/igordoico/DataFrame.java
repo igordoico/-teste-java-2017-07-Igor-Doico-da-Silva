@@ -28,14 +28,18 @@ public class DataFrame {
     }
 
 
+    /**
+     * @param tipo        tipo de contagem (*, distinct)
+     * @param propriedade nome da proprieade a qual deseja a contagem de valores distintos(nullable)
+     * @return retorna um HashMap<String,Integer> sendo Chave: nome da propriedade, Valor: total da contagem
+     */
     HashMap<String, Integer> getCount(String tipo, String propriedade) {
-        int total;
         HashMap<String, Integer> ret = new HashMap<>();
         switch (tipo) {
             case "*":
                 propriedade = "Total";
-                total = this.dados.size();
-                ret.put(propriedade,total);
+                int total = this.dados.size();
+                ret.put(propriedade, total);
                 break;
             case "distinct":
                 Integer index = this.cabecalho.get(propriedade);
@@ -43,7 +47,7 @@ public class DataFrame {
                 for (ArrayList<String> dado : this.dados) {
                     distinct.add(dado.get(index));
                 }
-                ret.put(propriedade,distinct.size());
+                ret.put(propriedade, distinct.size());
                 break;
             default:
                 break;
@@ -52,8 +56,20 @@ public class DataFrame {
         return ret;
     }
 
-    void filter(String propriedade, String valor) {
-        System.out.println("filtrando");
+    ArrayList<ArrayList<String>> filter(String propriedade, String valor) {
+        ArrayList<String> headers = new ArrayList<>(this.cabecalho.keySet());
+
+        headers.sort(Comparator.comparing(h -> this.cabecalho.get(h)));
+
+        ArrayList<ArrayList<String>> filtro = new ArrayList<>();
+        filtro.add(headers);
+        Integer index = this.cabecalho.get(propriedade);
+        for (ArrayList<String> dado : this.dados) {
+            if (dado.get(index).equals(valor)) {
+                filtro.add(dado);
+            }
+        }
+        return filtro;
     }
 
     public Map<String, Integer> getCabecalho() {
