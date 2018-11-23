@@ -3,16 +3,17 @@ package br.com.igordoico;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class DataFrame {
+class DataFrame {
 
     private int index;
     private Map<String, Integer> cabecalho = new HashMap<>();
     private ArrayList<ArrayList<String>> dados = new ArrayList<>();
 
-    DataFrame(Stream<String> dados, String separador) {
+    DataFrame(Stream<String> dataStream, String separador) {
         index = 0;
-        dados.forEach(l -> {
-            String[] linha = l.split(separador);
+        dataStream.forEach(l -> {
+
+            String[] linha = (separador != null) ? l.split(separador) : new String[]{l};
             if (index == 0) {
                 for (int i = 0; i < linha.length; i++) {
                     this.cabecalho.put(linha[i], i);
@@ -22,71 +23,88 @@ public class DataFrame {
             }
             index++;
         });
-
-        ArrayList<ArrayList<String>> linhas = new ArrayList<>();
-
     }
 
-
     /**
-     * @param tipo        tipo de contagem (*, distinct)
+     * @param countType   countType de contagem (*, distinct)
      * @param propriedade nome da proprieade a qual deseja a contagem de valores distintos(nullable)
      * @return retorna um HashMap<String,Integer> sendo Chave: nome da propriedade, Valor: total da contagem
      */
-    HashMap<String, Integer> getCount(String tipo, String propriedade) {
-        HashMap<String, Integer> ret = new HashMap<>();
-        switch (tipo) {
+    HashMap<String, Integer> getCount(String countType, String propriedade) {
+        HashMap<String, Integer> retorno = new HashMap<>();
+        switch (countType) {
             case "*":
                 propriedade = "Total";
                 int total = this.dados.size();
-                ret.put(propriedade, total);
+                retorno.put(propriedade, total);
                 break;
             case "distinct":
                 Integer index = this.cabecalho.get(propriedade);
+                if (index == null) return null;
                 HashSet<String> distinct = new HashSet<>();
                 for (ArrayList<String> dado : this.dados) {
                     distinct.add(dado.get(index));
                 }
-                ret.put(propriedade, distinct.size());
+                retorno.put(propriedade, distinct.size());
                 break;
             default:
+                System.out.println("Comando desconhecido.");
                 break;
 
         }
-        return ret;
+        return retorno;
     }
 
+    /**
+     * @param propriedade nome da propriedade a qual deseja fazer o filtro
+     * @param valor       valor do filtro em dada propriedade
+     * @return Arraylist das linhas filtradas
+     */
     ArrayList<ArrayList<String>> filter(String propriedade, String valor) {
-        ArrayList<String> headers = new ArrayList<>(this.cabecalho.keySet());
-
-        headers.sort(Comparator.comparing(h -> this.cabecalho.get(h)));
-
+        ArrayList<String> sortedHeader = getCabecalhoAsSortedArray();
         ArrayList<ArrayList<String>> filtro = new ArrayList<>();
-        filtro.add(headers);
-        Integer index = this.cabecalho.get(propriedade);
-        for (ArrayList<String> dado : this.dados) {
-            if (dado.get(index).equals(valor)) {
-                filtro.add(dado);
+        filtro.add(sortedHeader);
+        Integer propertyIndex = this.cabecalho.get(propriedade);
+        if (propertyIndex == null) return null;
+        if (valor == null) {
+            for (ArrayList<String> linha : this.dados) {
+                if (linha.get(propertyIndex).equals("")) {
+                    filtro.add(linha);
+                }
+            }
+        } else {
+            for (ArrayList<String> dado : this.dados) {
+                if (dado.get(propertyIndex).toUpperCase().equals(valor.toUpperCase())) {
+                    filtro.add(dado);
+                }
             }
         }
         return filtro;
     }
 
-    public Map<String, Integer> getCabecalho() {
+    Map<String, Integer> getCabecalho() {
         return cabecalho;
     }
 
-    public void setCabecalho(Map<String, Integer> cabecalho) {
+    void setCabecalho(Map<String, Integer> cabecalho) {
         this.cabecalho = cabecalho;
     }
 
-    public ArrayList<ArrayList<String>> getDados() {
+    /**
+     * @return retorna cabecalho como um ArrayList ordenado exatamente como no arquivo.
+     */
+    ArrayList<String> getCabecalhoAsSortedArray() {
+        ArrayList<String> sortedHeader = new ArrayList<>(this.cabecalho.keySet());
+        sortedHeader.sort(Comparator.comparing(h -> this.cabecalho.get(h)));
+        return sortedHeader;
+    }
+
+    ArrayList<ArrayList<String>> getDados() {
         return dados;
     }
 
-    public void setDados(ArrayList<ArrayList<String>> dados) {
+    void setDados(ArrayList<ArrayList<String>> dados) {
         this.dados = dados;
     }
-
 
 }
