@@ -22,6 +22,9 @@ public class App {
             extensao = getExtension(caminho);
             if (extensao != null)
                 stream = getLines(caminho, extensao);
+            else
+                System.out.println("Arquivo nao encontrado");
+
         } while (stream == null);
 
         separador = getSeparador(extensao);
@@ -29,6 +32,10 @@ public class App {
         DataFrame df = new DataFrame(stream, separador);
         boolean exit = false;
         String[] comando;
+        System.out.println("Propriedades:");
+        df.getCabecalhoAsSortedArray().forEach(System.out::println);
+        System.out.println("------------");
+
         System.out.println("Digite o comando desejado");
         System.out.println("para ajuda digite: help");
         scn.nextLine();
