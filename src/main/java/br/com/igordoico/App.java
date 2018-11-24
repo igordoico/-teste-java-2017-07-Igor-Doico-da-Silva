@@ -2,7 +2,6 @@ package br.com.igordoico;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,96 +27,105 @@ public class App {
         separador = getSeparador(extensao);
 
         DataFrame df = new DataFrame(stream, separador);
-        System.out.println(df.getDados().toString());
-        comandos(df);
-    }
-
-    /**
-     * @param df DataFrame o qual deseja realizar os comandos
-     */
-    private static void comandos(DataFrame df) {
         boolean exit = false;
         String[] comando;
         System.out.println("Digite o comando desejado");
         System.out.println("para ajuda digite: help");
         scn.nextLine();
         comando = scn.nextLine().split(" ");
+        ArrayList<String> resultado;
         do {
-            if (comando.length > 0) {
-                switch (comando[0]) {
-                    case "count":
-                        if (comando.length > 1) {
-                            String tipo = comando[1];
-                            String propriedade = comando.length > 2 ? comando[2] : null;
-                            HashMap<String, Integer> result = df.getCount(tipo, propriedade);
-                            if (result != null) {
-                                result.forEach((key, value) -> System.out.println(key + " - " + value.toString()));
-
-                            } else {
-                                System.out.println("Propriedade invalida.");
-                                System.out.println("Propriedades disponiveis:");
-                                System.out.println(df.getCabecalhoAsSortedArray());
-
-                            }
-                        } else {
-                            System.out.println("Comando incorreto. Utilize o comando help para ajuda");
-                        }
-                        break;
-                    case "filter":
-                        if (comando.length >= 2) {
-                            String propriedade = comando[1];
-                            String valor = comando.length == 2 ? null : comando[2];
-                            ArrayList<ArrayList<String>> result = df.filter(propriedade, valor);
-                            if (result != null) {
-                                result.forEach(item -> {
-                                    StringBuilder line = new StringBuilder();
-                                    for (String it : item) {
-                                        line.append(it).append(", ");
-                                    }
-                                    System.out.println(line.toString());
-                                });
-                            } else {
-                                System.out.println("Propriedade invalida.");
-                                System.out.println("Propriedades disponiveis:");
-                                System.out.println(df.getCabecalhoAsSortedArray());
-                            }
-                        } else {
-                            System.out.println("Comando incorreto. Utilize o comando help para ajuda");
-                        }
-                        break;
-                    case "exit":
-                        System.out.println("Deseja sair? S/N");
-                        String res = scn.next();
-                        exit = res.equals("S") || res.equals("s");
-                        break;
-                    case "help":
-                        listCommands();
-                        break;
-                    default:
-                        System.out.println("Comando incorreto. Utilize o comando help para ajuda");
-                        break;
-                }
-                System.out.println();
-                System.out.println("Digite o comando desejado");
-                comando = scn.nextLine().split(" ");
+            resultado = comandos(df, comando);
+            resultado.forEach(System.out::println);
+            System.out.println();
+            System.out.println("Digite o comando desejado");
+            comando = scn.nextLine().split(" ");
+            if (comando[0].equals("exit")) {
+                System.out.println("Deseja sair? S/N");
+                String res = scn.next();
+                exit = res.equals("S") || res.equals("s");
             }
         } while (!exit);
         System.out.println("Encerrando");
     }
 
     /**
+     * @param df      DataFrame o qual deseja realizar os comandos
+     * @param comando string com o comando desejado
+     */
+    static ArrayList<String> comandos(DataFrame df, String[] comando) {
+        ArrayList<String> resultado = new ArrayList<>();
+        if (comando.length > 0) {
+            switch (comando[0]) {
+                case "count":
+                    if (comando.length > 1) {
+                        String tipo = comando[1];
+                        String propriedade = comando.length > 2 ? comando[2] : null;
+                        HashMap<String, Integer> result = df.getCount(tipo, propriedade);
+                        if (result != null) {
+                            ArrayList<String> lambdaResult = resultado;
+                            result.forEach((key, value) -> lambdaResult.add(key + " - " + value.toString()));
+                            resultado = lambdaResult;
+                        } else {
+                            resultado.add("Propriedade invalida.");
+                            resultado.add("Propriedades disponiveis:");
+                            resultado.add(df.getCabecalhoAsSortedArray().toString());
+                        }
+                    } else {
+                        resultado.add("Comando incorreto. Utilize o comando help para ajuda");
+                    }
+                    break;
+                case "filter":
+                    if (comando.length >= 2) {
+                        String propriedade = comando[1];
+                        String valor = comando.length == 2 ? null : comando[2];
+                        ArrayList<ArrayList<String>> result = df.filter(propriedade, valor);
+                        if (result != null) {
+                            ArrayList<String> lambdaResult = new ArrayList<>();
+                            result.forEach(item -> {
+                                StringBuilder line = new StringBuilder();
+                                for (String it : item) {
+                                    line.append(it).append(", ");
+                                }
+                                lambdaResult.add(line.toString());
+                            });
+                            resultado = lambdaResult;
+
+                        } else {
+                            resultado.add("Propriedade invalida.");
+                            resultado.add("Propriedades disponiveis:");
+                            resultado.add(df.getCabecalhoAsSortedArray().toString());
+                        }
+                    } else {
+                        resultado.add("Comando incorreto. Utilize o comando help para ajuda");
+                    }
+                    break;
+                case "help":
+                    resultado = listCommands();
+                    break;
+                default:
+                    resultado.add("Comando incorreto. Utilize o comando help para ajuda");
+                    break;
+            }
+        }
+        return resultado;
+    }
+
+    /**
      * lista os comandos disponiveis
      */
-    private static void listCommands() {
-        System.out.println("Lista de Comandos");
-        System.out.println("-----------------");
-        System.out.println("help - Lista de comandos");
-        System.out.println("exit - Sair do programa");
-        System.out.println("count * - Contar total de registros");
-        System.out.println("count distinct [propriedade] - Contar total de valores distintos da propriedade");
-        System.out.println("filter [propriedade] [valor] - Listar cabecalho e linhas que correspondem ao valor em dada propriedade");
-        System.out.println("filter [propriedade] - Listar cabecalho e linhas aonde a propriedade é vazia");
-        System.out.println();
+    private static ArrayList<String> listCommands() {
+        ArrayList<String> comandos = new ArrayList<>();
+        comandos.add("Lista de Comandos");
+        comandos.add("-----------------");
+        comandos.add("help - Lista de comandos");
+        comandos.add("exit - Sair do programa");
+        comandos.add("count * - Contar total de registros");
+        comandos.add("count distinct [propriedade] - Contar total de valores distintos da propriedade");
+        comandos.add("filter [propriedade] [valor] - Listar cabecalho e linhas que correspondem ao valor em dada propriedade");
+        comandos.add("filter [propriedade] - Listar cabecalho e linhas aonde a propriedade é vazia");
+        comandos.add("");
+        return comandos;
     }
 
     /**
@@ -127,12 +135,11 @@ public class App {
      */
     private static Stream<String> getLines(String caminho, String extensao) {
         Stream<String> stringStream = null;
-        Path path = Paths.get(caminho);
         switch (extensao) {
             case "csv":
             case "tsv": {
                 try {
-                    stringStream = Files.lines(path);
+                    stringStream = Files.lines(Paths.get(caminho));
                 } catch (IOException e) {
                     System.out.println("Arquivo nao encontrado");
                 }
