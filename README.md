@@ -2,7 +2,7 @@
 
 Projeto para teste de selecao involves
 
-### Build
+## Build
 
 Para buildar o projeto utilize o comando _mvn package_ dentro da pasta principal do projeto
 
@@ -12,7 +12,7 @@ mvn package -f pom.xml
 
 Um jar sera gerado na pasta _target_ dentro da pasta principal do projeto
 
-### Executar
+## Executar
 
 Para executar utilize o comando _java -jar_ dentro da pasta _target_
 
