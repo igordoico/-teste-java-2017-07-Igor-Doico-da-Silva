@@ -7,7 +7,7 @@ class DataFrame {
 
     private int index;
     private Map<String, Integer> cabecalho = new HashMap<>();
-    private ArrayList<ArrayList<String>> dados = new ArrayList<>();
+    private List<List<String>> dados = new ArrayList<>();
 
     DataFrame(Stream<String> dataStream, String separador) {
         index = 0;
@@ -42,7 +42,7 @@ class DataFrame {
                 Integer index = this.cabecalho.get(propriedade);
                 if (index == null) return null;
                 HashSet<String> distinct = new HashSet<>();
-                for (ArrayList<String> dado : this.dados) {
+                for (List<String> dado : this.dados) {
                     distinct.add(dado.get(index));
                 }
                 retorno.put(propriedade, distinct.size());
@@ -58,22 +58,22 @@ class DataFrame {
     /**
      * @param propriedade nome da propriedade a qual deseja fazer o filtro
      * @param valor       valor do filtro em dada propriedade
-     * @return Arraylist das linhas filtradas
+     * @return lista das linhas filtradas
      */
-    ArrayList<ArrayList<String>> filter(String propriedade, String valor) {
-        ArrayList<String> sortedHeader = getCabecalhoAsSortedArray();
-        ArrayList<ArrayList<String>> filtro = new ArrayList<>();
+    List<List<String>> filter(String propriedade, String valor) {
+        List<String> sortedHeader = getSortedCabecalho();
+        List<List<String>> filtro = new ArrayList<>();
         filtro.add(sortedHeader);
         Integer propertyIndex = this.cabecalho.get(propriedade);
         if (propertyIndex == null) return null;
         if (valor == null) {
-            for (ArrayList<String> linha : this.dados) {
+            for (List<String> linha : this.dados) {
                 if (linha.get(propertyIndex).equals("")) {
                     filtro.add(linha);
                 }
             }
         } else {
-            for (ArrayList<String> dado : this.dados) {
+            for (List<String> dado : this.dados) {
                 if (dado.get(propertyIndex).toUpperCase().equals(valor.toUpperCase())) {
                     filtro.add(dado);
                 }
@@ -91,19 +91,19 @@ class DataFrame {
     }
 
     /**
-     * @return retorna cabecalho como um ArrayList ordenado exatamente como no arquivo.
+     * @return retorna cabecalho como uma lista ordenado exatamente como no arquivo.
      */
-    ArrayList<String> getCabecalhoAsSortedArray() {
-        ArrayList<String> sortedHeader = new ArrayList<>(this.cabecalho.keySet());
+    List<String> getSortedCabecalho() {
+        List<String> sortedHeader = new ArrayList<>(this.cabecalho.keySet());
         sortedHeader.sort(Comparator.comparing(h -> this.cabecalho.get(h)));
         return sortedHeader;
     }
 
-    ArrayList<ArrayList<String>> getDados() {
+    List<List<String>> getDados() {
         return dados;
     }
 
-    void setDados(ArrayList<ArrayList<String>> dados) {
+    void setDados(List<List<String>> dados) {
         this.dados = dados;
     }
 

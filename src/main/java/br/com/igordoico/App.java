@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -33,14 +34,14 @@ public class App {
         boolean exit = false;
         String[] comando;
         System.out.println("Propriedades:");
-        df.getCabecalhoAsSortedArray().forEach(System.out::println);
+        df.getSortedCabecalho().forEach(System.out::println);
         System.out.println("------------");
 
         System.out.println("Digite o comando desejado");
         System.out.println("para ajuda digite: help");
         scn.nextLine();
         comando = scn.nextLine().split(" ");
-        ArrayList<String> resultado;
+        List<String> resultado;
         do {
             resultado = comandos(df, comando);
             resultado.forEach(System.out::println);
@@ -60,8 +61,8 @@ public class App {
      * @param df      DataFrame o qual deseja realizar os comandos
      * @param comando string com o comando desejado
      */
-    static ArrayList<String> comandos(DataFrame df, String[] comando) {
-        ArrayList<String> resultado = new ArrayList<>();
+    static List<String> comandos(DataFrame df, String[] comando) {
+        List<String> resultado = new ArrayList<>();
         if (comando.length > 0) {
             switch (comando[0]) {
                 case "count":
@@ -70,13 +71,13 @@ public class App {
                         String propriedade = comando.length > 2 ? comando[2] : null;
                         HashMap<String, Integer> result = df.getCount(tipo, propriedade);
                         if (result != null) {
-                            ArrayList<String> lambdaResult = resultado;
+                            List<String> lambdaResult = resultado;
                             result.forEach((key, value) -> lambdaResult.add(key + " - " + value.toString()));
                             resultado = lambdaResult;
                         } else {
                             resultado.add("Propriedade invalida.");
                             resultado.add("Propriedades disponiveis:");
-                            resultado.add(df.getCabecalhoAsSortedArray().toString());
+                            resultado.add(df.getSortedCabecalho().toString());
                         }
                     } else {
                         resultado.add("Comando incorreto. Utilize o comando help para ajuda");
@@ -86,9 +87,9 @@ public class App {
                     if (comando.length >= 2) {
                         String propriedade = comando[1];
                         String valor = comando.length == 2 ? null : comando[2];
-                        ArrayList<ArrayList<String>> result = df.filter(propriedade, valor);
+                        List<List<String>> result = df.filter(propriedade, valor);
                         if (result != null) {
-                            ArrayList<String> lambdaResult = new ArrayList<>();
+                            List<String> lambdaResult = new ArrayList<>();
                             result.forEach(item -> {
                                 StringBuilder line = new StringBuilder();
                                 for (String it : item) {
@@ -101,7 +102,7 @@ public class App {
                         } else {
                             resultado.add("Propriedade invalida.");
                             resultado.add("Propriedades disponiveis:");
-                            resultado.add(df.getCabecalhoAsSortedArray().toString());
+                            resultado.add(df.getSortedCabecalho().toString());
                         }
                     } else {
                         resultado.add("Comando incorreto. Utilize o comando help para ajuda");
@@ -121,8 +122,8 @@ public class App {
     /**
      * lista os comandos disponiveis
      */
-    private static ArrayList<String> listCommands() {
-        ArrayList<String> comandos = new ArrayList<>();
+    private static List<String> listCommands() {
+        List<String> comandos = new ArrayList<>();
         comandos.add("Lista de Comandos");
         comandos.add("-----------------");
         comandos.add("help - Lista de comandos");
