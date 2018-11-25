@@ -4,7 +4,7 @@ Projeto para teste de selecao involves
 
 ### Build
 
-Para buildar o projeto utilie o comando _mvn package_ dentro da pasta principal do projeto
+Para buildar o projeto utilize o comando _mvn package_ dentro da pasta principal do projeto
 
 ```
 mvn package -f pom.xml
@@ -22,7 +22,7 @@ java -jar cidades.jar
 
 ## Testes
 
-Para rodar os testes automatizados rode o comando _mvn test_
+Para rodar os utilize automatizados rode o comando _mvn test_
 
 
 ```
